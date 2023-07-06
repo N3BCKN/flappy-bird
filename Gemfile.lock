@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ruby2d (0.11.3)
+
+PLATFORMS
+  x86_64-darwin-19
+
+DEPENDENCIES
+  ruby2d
+
+BUNDLED WITH
+   2.2.11
