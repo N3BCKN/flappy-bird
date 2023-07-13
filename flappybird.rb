@@ -39,7 +39,6 @@ class Bird
   def move
     @velocity += GRAVITY
     @y = [@y + @velocity, 0].max
-    # @y += @velocity
   end 
 end
 
