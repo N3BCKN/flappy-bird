@@ -2,7 +2,6 @@ require 'ruby2d'
 
 HEIGHT = 640 
 WIDTH = 420
-GRAVITY = 0.7
 
 set width: WIDTH
 set height: HEIGHT
@@ -16,24 +15,25 @@ def draw_score(score)
   Text.new(score, x: 30, y: 30, size: 40, color: 'white', z: 11)
 end
 
+def draw_game_over
+  Text.new("GAME OVER", x: WIDTH/2 - 100, y: HEIGHT/2, size: 30, color: 'red', z: 11)
+end
+
 class Bird
   attr_reader :x, :y
+  attr_writer :gravity, :velocity
 
   def initialize
     @x = 30 
     @y = HEIGHT / 2
     @width = 36
     @height = 33
-    @velocity = 2
+    @gravity = 0.7
+    @velocity = 0
   end 
 
   def draw
-    Image.new(
-      './assets/images/flappybird.png',
-      x: @x, y: @y,
-      width: @width, height: @height,
-      z: 10
-    )
+    Image.new('./assets/images/flappybird.png', x: @x, y: @y, width: @width, height: @height, z: 10)
   end
   
   def jump 
@@ -41,7 +41,7 @@ class Bird
   end 
 
   def move
-    @velocity += GRAVITY
+    @velocity += @gravity
     @y = [@y + @velocity, 0].max
   end
 
@@ -51,13 +51,16 @@ class Bird
 end
 
 class Pipe
+  attr_writer :scored, :moving_distance
+
   def initialize
     @width = 55 
     @height = 512/4 + rand(512/2)
     @x = WIDTH + @width
     @y = 0
     @open_gap = HEIGHT / 4
-    @y_bottom = HEIGHT - @height + @open_gap
+    @scored = false 
+    @moving_distance = 5
   end
 
   def draw
@@ -77,7 +80,7 @@ class Pipe
   end
 
   def move
-    @x -= 5
+    @x -= @moving_distance
   end
 
   def hit?(x,y)
@@ -88,11 +91,15 @@ class Pipe
     @x + @width <= 0 
   end
 
-  def passed? 
-    @x > 30
+  def score? 
+    passed? && !@scored
   end
-end
 
+  private
+  def passed?
+    @x <= 30
+  end 
+end
 
 bird = Bird.new
 pipes = []
@@ -113,19 +120,30 @@ update do
     pipe.move
   end 
 
-  if Window.frames % 40 == 0 
-    pipes << Pipe.new 
-  end  
+  if game_over
+    draw_game_over
+    next
+  end
 
-  # p pipes.first.hit?(bird.x,bird.y)
-  # p bird.felt?
-  p pipes.first.passed?
+  pipes << Pipe.new if Window.frames % 40 == 0 
+  
+  if pipes.first.score? 
+    pipes.first.scored = true 
+    score += 1
+  end 
+
   pipes.shift if pipes.first.out_of_scope?
+
+  if pipes.first.hit?(bird.x,bird.y) || bird.felt?
+    game_over = true
+    pipes.each { |pipe| pipe.moving_distance = 0}
+    bird.gravity = 0
+    bird.velocity = 0
+  end 
 end
 
 on :key_up do |event|
-  bird.jump if event.key == 'space'
+  bird.jump if event.key == 'space' && !game_over
 end
-
 
 show 
