@@ -1,7 +1,7 @@
 require 'ruby2d'
 
-HEIGHT = 540 
-WIDTH = 360
+HEIGHT = 640 
+WIDTH = 420
 GRAVITY = 0.7
 
 set width: WIDTH
@@ -11,6 +11,10 @@ set fps_cap: 30
 def draw_background
   Image.new('./assets/images/flappybirdbg.png', x: 0, y: 0, width: WIDTH, height: HEIGHT)
 end 
+
+def draw_score(score)
+  Text.new(score, x: 30, y: 30, size: 40, color: 'white', z: 11)
+end
 
 class Bird
   attr_reader :x, :y
@@ -33,22 +37,26 @@ class Bird
   end
   
   def jump 
-    @velocity = -7
+    @velocity = -8
   end 
 
   def move
     @velocity += GRAVITY
     @y = [@y + @velocity, 0].max
-  end 
+  end
+
+  def felt?
+    @y >= HEIGHT
+  end
 end
 
 class Pipe
   def initialize
-    @width = 45 
+    @width = 55 
     @height = 512/4 + rand(512/2)
     @x = WIDTH + @width
     @y = 0
-    @open_gap = @height / 3
+    @open_gap = HEIGHT / 4
     @y_bottom = HEIGHT - @height + @open_gap
   end
 
@@ -62,9 +70,9 @@ class Pipe
 
     Image.new('./assets/images/bottompipe.png',
     x: @x,
-    y: @y_bottom,
+    y: @height + @open_gap,
     width: @width,
-    height: @height_bottom,
+    height: HEIGHT - @height,
     z: 10)
   end
 
@@ -73,7 +81,7 @@ class Pipe
   end
 
   def hit?(x,y)
-    (@x..@x + @width).include?(x)
+    (@x..@x + @width).include?(x) && ((0..@height).include?(y) || (@height+@open_gap..HEIGHT).include?(y))
   end 
 
   def out_of_scope?
@@ -84,12 +92,15 @@ end
 
 bird = Bird.new
 pipes = []
-pipes << Pipe.new 
+pipes << Pipe.new
+score = 0
+game_over = false
 
 update do
   clear 
 
   draw_background
+  draw_score(score)
   bird.draw
   bird.move
 
@@ -98,10 +109,12 @@ update do
     pipe.move
   end 
 
-  if Window.frames % 30 == 0 
+  if Window.frames % 40 == 0 
     pipes << Pipe.new 
   end  
 
+  # p pipes.first.hit?(bird.x,bird.y)
+  p bird.felt?
   pipes.shift if pipes.first.out_of_scope?
 end
 
