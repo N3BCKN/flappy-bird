@@ -33,7 +33,7 @@ class Bird
   end
   
   def jump 
-    @velocity = -6
+    @velocity = -7
   end 
 
   def move
