@@ -45,7 +45,7 @@ end
 class Pipe
   def initialize
     @width = 45 
-    @height = HEIGHT / 2 - rand() * HEIGHT / 5 
+    @height = 512/4 + rand(512/2)
     @x = WIDTH + @width
     @y = 0
     @open_gap = @height / 3
