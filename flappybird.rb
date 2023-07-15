@@ -87,6 +87,10 @@ class Pipe
   def out_of_scope?
     @x + @width <= 0 
   end
+
+  def passed? 
+    @x > 30
+  end
 end
 
 
@@ -114,7 +118,8 @@ update do
   end  
 
   # p pipes.first.hit?(bird.x,bird.y)
-  p bird.felt?
+  # p bird.felt?
+  p pipes.first.passed?
   pipes.shift if pipes.first.out_of_scope?
 end
 
