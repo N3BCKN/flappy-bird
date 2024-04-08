@@ -12,7 +12,7 @@ def draw_background
 end 
 
 def draw_score(score)
-  Text.new(score, x: 30, y: 30, size: 40, color: 'white', z: 11)
+  Text.new(score, x: WIDTH / 2 - 30, y: 120, size: 60, color: 'white', z: 11)
 end
 
 def draw_game_over
