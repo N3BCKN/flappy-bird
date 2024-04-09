@@ -64,19 +64,9 @@ class Pipe
   end
 
   def draw
-    Image.new('./assets/images/toppipe.png',
-    x: @x,
-    y: @y,
-    width: @width,
-    height: @height,
-    z: 10)
+    Image.new('./assets/images/toppipe.png',x: @x, y: @y, width: @width, height: @height, z: 10)
 
-    Image.new('./assets/images/bottompipe.png',
-    x: @x,
-    y: @height + @open_gap,
-    width: @width,
-    height: HEIGHT - @height,
-    z: 10)
+    Image.new('./assets/images/bottompipe.png', x: @x, y: @height + @open_gap, width: @width, height: HEIGHT - @height, z: 10)
   end
 
   def move
